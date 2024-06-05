@@ -37,7 +37,7 @@ def main():
             st.warning("Vă rugăm să introduceți cheia API OpenAI pentru a utiliza acest asistent.")
     elif option == "Chat GPT-4":
         if api_key:
-            show_chat_gpt4()
+            show_chat_gpt4(api_key)
         else:
             st.warning("Vă rugăm să introduceți cheia API OpenAI pentru a utiliza acest asistent.")
 
@@ -74,7 +74,7 @@ def show_annexes_assistant():
     st.header("Asistenți pentru Anexe și Declarații")
     # Adaugă funcționalitățile necesare pentru acest asistent
 
-def show_chat_gpt4():
+def show_chat_gpt4(api_key):
     st.header("Chat cu GPT-4")
 
     with st.expander(" ℹ️ Mesaj Informativ ℹ️  "):
@@ -83,8 +83,9 @@ def show_chat_gpt4():
             În acest moment, funcționalitatea este limitată la furnizarea de răspunsuri generale.
         """)
 
+    # Inițializarea stării sesiunii pentru model și mesaje
     if "openai_model" not in st.session_state:
-        st.session_state["openai_model"] = "gpt-4o"
+        st.session_state["openai_model"] = "gpt-4-1106-preview"
 
     if "messages" not in st.session_state:
         st.session_state.messages = []
@@ -102,11 +103,12 @@ def show_chat_gpt4():
 
         # Generarea răspunsului asistentului și afișarea acestuia
         with st.chat_message("assistant"):
-            response = generate_response(prompt)
+            response = generate_response(prompt, api_key)
             st.markdown(response)
         st.session_state.messages.append({"role": "assistant", "content": response})
 
-def generate_response(prompt):
+def generate_response(prompt, api_key):
+    openai.api_key = api_key
     response = openai.ChatCompletion.create(
         model=st.session_state["openai_model"],
         messages=[
@@ -118,5 +120,3 @@ def generate_response(prompt):
 
 if __name__ == "__main__":
     main()
-
-
