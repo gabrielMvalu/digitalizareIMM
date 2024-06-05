@@ -84,7 +84,7 @@ def show_chat_gpt4():
         """)
 
     if "openai_model" not in st.session_state:
-        st.session_state["openai_model"] = "gpt-4-1106-preview"
+        st.session_state["openai_model"] = "gpt-4o"
 
     if "messages" not in st.session_state:
         st.session_state.messages = []
@@ -107,7 +107,7 @@ def show_chat_gpt4():
         st.session_state.messages.append({"role": "assistant", "content": response})
 
 def generate_response(prompt):
-    response = openai.Completion.create(
+    response = openai.ChatCompletion.create(
         model=st.session_state["openai_model"],
         messages=[
             {"role": "system", "content": "Ești un asistent care ajută la redactarea documentelor pentru fonduri europene."},
@@ -118,4 +118,5 @@ def generate_response(prompt):
 
 if __name__ == "__main__":
     main()
+
 
