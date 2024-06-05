@@ -18,7 +18,7 @@ else:
 
     # Inițializarea stării sesiunii pentru model și mesaje
     if "openai_model" not in st.session_state:
-        st.session_state["openai_model"] = "gpt-4-1106-preview"
+        st.session_state["openai_model"] = "gpt-4o"
 
     if "messages" not in st.session_state:
         st.session_state.messages = []
