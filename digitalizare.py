@@ -2,20 +2,18 @@ import streamlit as st
 import openai
 import pandas as pd
 
-# Set up the OpenAI API key
-openai.api_key = st.secrets["openai_api_key"]
-
 def main():
     st.title("Asistenți pentru Redactarea Documentelor pentru Fonduri Europene")
     
     # Sidebar for API key input
-    with st.sidebar:
-        st.header("Configurare API OpenAI")
-        api_key = st.text_input("Introdu cheia API OpenAI", type="password")
-        if api_key:
-            st.write("Cheia API a fost configurată.")
-            openai.api_key = api_key
-            st.secrets["openai_api_key"] = api_key
+    st.sidebar.title("Configurare API OpenAI")
+    api_key = st.sidebar.text_input("Introdu cheia API OpenAI", type="password")
+    
+    if api_key:
+        openai.api_key = api_key
+        st.sidebar.success("Cheia API a fost configurată cu succes.")
+    else:
+        st.sidebar.warning("Introduceți cheia API OpenAI pentru a continua.")
 
     st.sidebar.title("Navigare")
     option = st.sidebar.selectbox("Selectează Asistentul", ("Pagina Principală", "Planul de Afaceri", "Proiect Tehnic", "Anexe și Declarații"))
@@ -23,11 +21,20 @@ def main():
     if option == "Pagina Principală":
         show_home_page()
     elif option == "Planul de Afaceri":
-        show_business_plan_assistant()
+        if api_key:
+            show_business_plan_assistant()
+        else:
+            st.warning("Vă rugăm să introduceți cheia API OpenAI pentru a utiliza acest asistent.")
     elif option == "Proiect Tehnic":
-        show_technical_project_assistant()
+        if api_key:
+            show_technical_project_assistant()
+        else:
+            st.warning("Vă rugăm să introduceți cheia API OpenAI pentru a utiliza acest asistent.")
     elif option == "Anexe și Declarații":
-        show_annexes_assistant()
+        if api_key:
+            show_annexes_assistant()
+        else:
+            st.warning("Vă rugăm să introduceți cheia API OpenAI pentru a utiliza acest asistent.")
 
 def show_home_page():
     st.header("Bine ați venit la Asistenții pentru Redactarea Documentelor pentru Fonduri Europene")
@@ -63,3 +70,4 @@ def show_annexes_assistant():
 
 if __name__ == "__main__":
     main()
+
