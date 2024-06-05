@@ -16,7 +16,7 @@ def main():
         st.sidebar.warning("Introduceți cheia API OpenAI pentru a continua.")
 
     st.sidebar.title("Navigare")
-    option = st.sidebar.selectbox("Selectează Asistentul", ("Pagina Principală", "Planul de Afaceri", "Proiect Tehnic", "Anexe și Declarații"))
+    option = st.sidebar.selectbox("Selectează Asistentul", ("Pagina Principală", "Planul de Afaceri", "Proiect Tehnic", "Anexe și Declarații", "Chat GPT-4"))
 
     if option == "Pagina Principală":
         show_home_page()
@@ -35,6 +35,11 @@ def main():
             show_annexes_assistant()
         else:
             st.warning("Vă rugăm să introduceți cheia API OpenAI pentru a utiliza acest asistent.")
+    elif option == "Chat GPT-4":
+        if api_key:
+            show_chat_gpt4()
+        else:
+            st.warning("Vă rugăm să introduceți cheia API OpenAI pentru a utiliza acest asistent.")
 
 def show_home_page():
     st.header("Bine ați venit la Asistenții pentru Redactarea Documentelor pentru Fonduri Europene")
@@ -44,6 +49,7 @@ def show_home_page():
         - **Planul de Afaceri:** Ghid complet pentru redactarea unui plan de afaceri.
         - **Proiect Tehnic:** Asistență pentru redactarea specificațiilor tehnice ale proiectului.
         - **Anexe și Declarații:** Ghid pentru completarea anexelor și declarațiilor necesare.
+        - **Chat GPT-4:** Interacțiune directă cu modelul GPT-4 pentru asistență personalizată.
     """)
 
 def show_business_plan_assistant():
@@ -67,6 +73,48 @@ def show_technical_project_assistant():
 def show_annexes_assistant():
     st.header("Asistenți pentru Anexe și Declarații")
     # Adaugă funcționalitățile necesare pentru acest asistent
+
+def show_chat_gpt4():
+    st.header("Chat cu GPT-4")
+
+    with st.expander(" ℹ️ Mesaj Informativ ℹ️  "):
+        st.write("""
+            Vă informăm că acest bot se află într-o fază incipientă de dezvoltare. 
+            În acest moment, funcționalitatea este limitată la furnizarea de răspunsuri generale.
+        """)
+
+    if "openai_model" not in st.session_state:
+        st.session_state["openai_model"] = "gpt-4-1106-preview"
+
+    if "messages" not in st.session_state:
+        st.session_state.messages = []
+
+    # Afișarea mesajelor anterioare
+    for message in st.session_state.messages:
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
+
+    # Input pentru mesaj nou de la utilizator
+    if prompt := st.chat_input("Adăugați mesajul aici."):
+        st.session_state.messages.append({"role": "user", "content": f"{prompt}" })
+        with st.chat_message("user"):
+            st.markdown(prompt)
+
+        # Generarea răspunsului asistentului și afișarea acestuia
+        with st.chat_message("assistant"):
+            response = generate_response(prompt)
+            st.markdown(response)
+        st.session_state.messages.append({"role": "assistant", "content": response})
+
+def generate_response(prompt):
+    response = openai.Completion.create(
+        model=st.session_state["openai_model"],
+        messages=[
+            {"role": "system", "content": "Ești un asistent care ajută la redactarea documentelor pentru fonduri europene."},
+            {"role": "user", "content": prompt}
+        ]
+    )
+    return response.choices[0].message["content"]
 
 if __name__ == "__main__":
     main()
